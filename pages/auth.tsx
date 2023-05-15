@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Input from "@/components/input";
 import { useCallback, useState } from "react";
+import axios from "axios";
+
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -13,6 +15,18 @@ export default function Auth() {
       currentVariant === "login" ? "register" : "login"
     );
   }, []);
+
+  const register = useCallback(async () => {
+    try {
+      await axios.post("/api/register", {
+        email,
+        name,
+        password,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [email, name, password]);
 
   return (
     <div className="relative h-full w-full bg-[url('/images/hero.jpg')] bg-no-repeat bg-center bg-fixed bg-cover">
@@ -49,29 +63,36 @@ export default function Auth() {
                 value={password}
               />
             </div>
-            <button className="bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 transition">
-              Entrar
-            </button>
             {variant === "login" ? (
-              <p className="text-neutral-500 mt-12">
-                Novo por aqui?
-                <span
-                  onClick={toggleVariant}
-                  className="text-white ml-1 hover:underline cursor-pointer"
-                >
-                  Criar Conta
-                </span>
-              </p>
+              <>
+                <button className="bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 transition">
+                  Entrar
+                </button>
+                <p className="text-neutral-500 mt-12">
+                  Novo por aqui?
+                  <span
+                    onClick={toggleVariant}
+                    className="text-white ml-1 hover:underline cursor-pointer"
+                  >
+                    Criar Conta
+                  </span>
+                </p>
+              </>
             ) : (
-              <p className="text-neutral-500 mt-12">
-                Já tem uma Conta?
-                <span
-                  onClick={toggleVariant}
-                  className="text-white ml-1 hover:underline cursor-pointer"
-                >
-                  Entar
-                </span>
-              </p>
+              <>
+                <button onClick={register} className="bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 transition">
+                  Cadastrar
+                </button>
+                <p className="text-neutral-500 mt-12">
+                  Já tem uma Conta?
+                  <span
+                    onClick={toggleVariant}
+                    className="text-white ml-1 hover:underline cursor-pointer"
+                  >
+                    Entar
+                  </span>
+                </p>
+              </>
             )}
           </div>
         </div>
