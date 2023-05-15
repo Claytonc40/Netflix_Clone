@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Input from "./components/input";
+import Input from "@/components/input";
 import { useCallback, useState } from "react";
 export default function Auth() {
   const [email, setEmail] = useState("");
