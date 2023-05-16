@@ -1,20 +1,58 @@
 import Image from "next/image";
 import Input from "@/components/input";
 import { useCallback, useState } from "react";
-import axios from "axios";
+import { getSession, signIn } from "next-auth/react";
+import { useRouter } from "next/router";
+import { FcGoogle } from 'react-icons/fc';
+import { FaGithub } from 'react-icons/fa';
+import axios from 'axios';
+import { NextPageContext } from 'next';
+
+
+export async function getServerSideProps(context: NextPageContext) {
+  const session = await getSession(context);
+
+  if (session) {
+    return {
+      redirect: {
+        destination: "/profiles",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+}
 
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-
   const [variant, setVariant] = useState("login");
+  const router = useRouter();
 
   const toggleVariant = useCallback(() => {
     setVariant((currentVariant) =>
       currentVariant === "login" ? "register" : "login"
     );
   }, []);
+  
+  const login = useCallback(async () => {
+    try {
+      await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+        callbackUrl: '/profiles'
+      });
+
+      router.push('/profiles');
+    } catch (error) {
+      console.log(error);
+    }
+  }, [email, password, router]);
 
   const register = useCallback(async () => {
     try {
@@ -23,10 +61,11 @@ export default function Auth() {
         name,
         password,
       });
+      login();
     } catch (error) {
       console.log(error);
     }
-  }, [email, name, password]);
+  }, [email, login, name, password]);
 
   return (
     <div className="relative h-full w-full bg-[url('/images/hero.jpg')] bg-no-repeat bg-center bg-fixed bg-cover">
@@ -63,37 +102,24 @@ export default function Auth() {
                 value={password}
               />
             </div>
-            {variant === "login" ? (
-              <>
-                <button className="bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 transition">
-                  Entrar
-                </button>
-                <p className="text-neutral-500 mt-12">
-                  Novo por aqui?
-                  <span
-                    onClick={toggleVariant}
-                    className="text-white ml-1 hover:underline cursor-pointer"
-                  >
-                    Criar Conta
-                  </span>
-                </p>
-              </>
-            ) : (
-              <>
-                <button onClick={register} className="bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 transition">
-                  Cadastrar
-                </button>
-                <p className="text-neutral-500 mt-12">
-                  Já tem uma Conta?
-                  <span
-                    onClick={toggleVariant}
-                    className="text-white ml-1 hover:underline cursor-pointer"
-                  >
-                    Entar
-                  </span>
-                </p>
-              </>
-            )}
+            <button onClick={variant === 'login' ? login : register} className="bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 transition">
+              {variant === 'login' ? 'Login' : 'Sign up'}
+            </button>
+            <div className="flex flex-row items-center gap-4 mt-8 justify-center">
+              <div onClick={() => signIn('google', { callbackUrl: '/profiles' })} className="w-10 h-10 bg-white rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition">
+                <FcGoogle size={32} />
+              </div>
+              <div onClick={() => signIn('github', { callbackUrl: '/profiles' })} className="w-10 h-10 bg-white rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition">
+                <FaGithub size={32} />
+              </div>
+            </div>
+            <p className="text-neutral-500 mt-12">
+              {variant === 'login' ? 'Primeira vez Aqui?' : 'Já tem uma conta?'}
+              <span onClick={toggleVariant} className="text-white ml-1 hover:underline cursor-pointer">
+                {variant === 'login' ? 'Crie uma conta' : 'Entrar'}
+              </span>
+              .
+            </p>
           </div>
         </div>
       </div>
