@@ -103,7 +103,7 @@ export default function Auth() {
               />
             </div>
             <button onClick={variant === 'login' ? login : register} className="bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 transition">
-              {variant === 'login' ? 'Login' : 'Sign up'}
+              {variant === 'login' ? 'Entra' : 'Cadastrar'}
             </button>
             <div className="flex flex-row items-center gap-4 mt-8 justify-center">
               <div onClick={() => signIn('google', { callbackUrl: '/profiles' })} className="w-10 h-10 bg-white rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition">
