@@ -5,8 +5,8 @@ import PlayButton from "./PlayButton";
 import useInfoModal from "@/hooks/useInfoModal";
 
 const Billboard: React.FC = () => {
-  const { openModal } = useInfoModal();
   const { data } = useBillboard();
+  const { openModal } = useInfoModal();
 
   const handleOpenModal = useCallback(() => {
     openModal(data?.id);
